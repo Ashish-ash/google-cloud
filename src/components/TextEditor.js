@@ -1,22 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { Editor } from "react-draft-wysiwyg";
 import { convertFromRaw, convertToRaw, EditorState } from "draft-js";
-import { Icon, Button } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import StateToPdfMake from "draft-js-export-pdfmake";
+import Button from "@material-tailwind/react/components/Button";
 
 const TextEditor = () => {
 	const [editorState, setEditorState] = useState(EditorState.createEmpty());
 	return (
 		<>
 			<header className="flex justify-between items-center p-3 pb-1">
-				<span className="cursor-pointer">
-					{/* <Link to="/">
-						<Icon name="description" color="blue" size="5xl" />
-					</Link> */}
-				</span>
 				<div className="flex-grow px-2">
-					<h2 className="">Name</h2>
 					<div className="flex items-center overflow-x-scroll text-sm space-x-1 ml-1 text-gray-600">
 						<p className="options">File</p>
 						<p className="options">Edit</p>
@@ -37,15 +33,13 @@ const TextEditor = () => {
 					iconOnly={false}
 					ripple="light"
 					onClick={() => {
-						// const stateToPdfMake = new StateToPdfMake(userDoc?.editorState);
-						// // console.log(stateToPdfMake.generate());
-						// pdfMake.vfs = pdfFonts.pdfMake.vfs;
-						// pdfMake
-						//   .createPdf(stateToPdfMake.generate())
-						//   .download(`${userDoc?.name}.pdf`);
+						const stateToPdfMake = new StateToPdfMake(
+							convertToRaw(editorState.getCurrentContent())
+						);
+						pdfMake.vfs = pdfFonts.pdfMake.vfs;
+						pdfMake.createPdf(stateToPdfMake.generate()).download("Doc.pdf");
 					}}
 				>
-					<Icon name="download" size="md" />
 					<span>Download</span>
 				</Button>
 			</header>
